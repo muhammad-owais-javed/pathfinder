@@ -22,8 +22,8 @@ type Graph struct {
 
 func NewGraph() *Graph{
 	return &Graph{
-		Nodes: make(map[string]*Node)
-		coordsTracker: make(map[string]bool)
+		Nodes: make(map[string]*Node),
+		coordsTracker: make(map[string]bool),
 	}
 }
 
@@ -33,13 +33,13 @@ func (g *Graph) AddNode(name string, x, y int) error {
 		return fmt.Errorf("Duplicate station name found: %s", name)
 	}
 
-	coordKey := fmt.Sprintf("%d,%d", x, y)
+	coordsKey := fmt.Sprintf("%d,%d", x, y)
 
 	if g.coordsTracker[coordsKey] {
-		return fmt.Error("Duplicate coordinates found at %s for station %s", coordKey, name)
+		return fmt.Errorf("Duplicate coordinates found at %s for station %s", coordsKey, name)
 	}
 
-	newNode := *Node {
+	newNode := &Node{
 		Name : name,
 		X : x,
 		Y : y,
@@ -58,14 +58,14 @@ func (g *Graph) AddEdge(name1, name2 string) error {
 	node2, exists2 := g.Nodes[name2]
 
 	if !exists1{
-		return fmt.Sprintf("Cannot create edge, station doesn't exists: %s", name1)
+		return fmt.Errorf("Cannot create edge, station doesn't exists: %s", name1)
 	}
 
 	if !exists2{
-		return fmt.Sprintf("Cannot create edge, station doesn't exists: %s", name2)
+		return fmt.Errorf("Cannot create edge, station doesn't exists: %s", name2)
 	}
 
-	node1.Edges := append(node1.Edges, node2)
-	node2.Edges := append(node2.Edges, node1)
+	node1.Edges = append(node1.Edges, node2)
+	node2.Edges = append(node2.Edges, node1)
 	return nil
 }
