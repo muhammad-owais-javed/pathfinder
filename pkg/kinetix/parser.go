@@ -87,7 +87,7 @@ func parseStationLine(graph *Graph, line string) error {
 	x, errX := strconv.Atoi(xStr)
 	y, errY := strconv.Atoi(yStr)
 
-	if errX != nil || errY != nil || x < 0 || y < 0 {
+	if errX != nil || errY != nil || x <= 0 || y <= 0 {
 		return fmt.Errorf("Invalid coordinates for station %s: must be positive integers", name)
 	}
 	err := graph.AddNode(name, x, y)
