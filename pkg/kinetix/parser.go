@@ -4,9 +4,12 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
+
+var validNameRegex = regexp.MustCompile(`^[a-z0-9_]+$`)
 
 func ParseNetworkMap(filePath string) (*Graph, error) {
 	file, err := os.Open(filePath)
@@ -73,6 +76,11 @@ func parseStationLine(graph *Graph, line string) error {
 	}
 
 	name := strings.TrimSpace(parts[0])
+
+	if !validNameRegex.MatchString(name) {
+		return fmt.Errorf("Invalid station name '%s': only lower-case letters, numbers, and underscores allowed", name)
+	}
+
 	xStr := strings.TrimSpace(parts[1])
 	yStr := strings.TrimSpace(parts[2])
 
