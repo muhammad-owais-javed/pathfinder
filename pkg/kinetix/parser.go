@@ -9,7 +9,7 @@ import (
 )
 
 func ParseNetworkMap(filePath string) (*Graph, error) {
-	file, err := os.OpenFile(filePath)
+	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("Could not open file: %v", err)
 	}
@@ -36,12 +36,12 @@ func ParseNetworkMap(filePath string) (*Graph, error) {
 			continue
 		}
 
-		if currentSection == "stations:" {
+		if currentSection == "stations" {
 			err := parseStationLine(graph, line)
 			if err != nil {
 				return nil, err
 			}
-		} else if currentSection == "connections:" {
+		} else if currentSection == "connections" {
 			err := parseConnectionLine(graph, line)
 			if err != nil {
 				return nil, err
@@ -68,7 +68,7 @@ func cleanLine(line string) string {
 
 func parseStationLine(graph *Graph, line string) error {
 	parts := strings.Split(line, ",")
-	if len(parts != 3) {
+	if len(parts) != 3 {
 		return fmt.Errorf("Invalid station format (expected name,x,y): %s", line)
 	}
 
@@ -82,7 +82,11 @@ func parseStationLine(graph *Graph, line string) error {
 	if errX != nil || errY != nil || x < 0 || y < 0 {
 		return fmt.Errorf("Invalid coordinates for station %s: must be positive integers", name)
 	}
-	return graph.AddNode(name, x, y)
+	err := graph.AddNode(name, x, y)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func parseConnectionLine(graph *Graph, line string) error {
@@ -94,5 +98,9 @@ func parseConnectionLine(graph *Graph, line string) error {
 	name1 := strings.TrimSpace(parts[0])
 	name2 := strings.TrimSpace(parts[1])
 
-	return graph.AddEdge(name1, name2)
+	err := graph.AddEdge(name1, name2)
+	if err != nil {
+		return err
+	}
+	return nil
 }
