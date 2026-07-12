@@ -65,7 +65,7 @@ func (g *Graph) AddEdge(name1, name2 string) error {
 		return fmt.Errorf("Cannot create edge, station doesn't exists: %s", name2)
 	}
 
-	for _, edges := node1.Edges {
+	for _, edges := range node1.Edges {
 		if edges.Name == name2 {
 			return fmt.Errorf("Duplicate connection found between %s and %s", name1, name2)
 		}
