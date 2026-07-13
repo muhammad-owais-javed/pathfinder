@@ -50,10 +50,10 @@ func (g *Graph) FindShortestPath(startName string, endName string) ([]*Node, err
 
 		}
 
-		if found == false {
-			continue
-		}
+	}
 
+	if found == false {
+		return nil, fmt.Errorf("No path exists between %s and %s", startName, endName)
 	}
 
 	var path []*Node
