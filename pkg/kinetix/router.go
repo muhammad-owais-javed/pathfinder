@@ -64,6 +64,14 @@ func (g *Graph) FindShortestPath(startName string, endName string) ([]*Node, err
 		currentNode = parent[currentNode.Name]
 	}
 
+	reversePath(path)
+
 	return path, nil
 
+}
+
+func reversePath(path []*Node) {
+	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
+		path[i], path[j] = path[j], path[i]
+	}
 }
