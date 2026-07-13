@@ -1,7 +1,6 @@
-package pkg
+package kinetix
 
 import (
-
 	"fmt"
 	"os"
 	"bufio"
