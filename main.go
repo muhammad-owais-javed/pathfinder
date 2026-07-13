@@ -46,7 +46,7 @@ func main() {
 	// }
 
 	graph, err := kinetix.ParseNetworkMap("data/network.map")
-	fmt.Println(graph)
+	//fmt.Println(graph)
 	if err != nil {
 		log.Fatalf("Failed to parse network map: %v\n", err)
 	}
