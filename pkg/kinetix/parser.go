@@ -1,29 +1,43 @@
-package kinetix
+package pkg
 
 import (
-	"bufio"
+
 	"fmt"
 	"os"
-	"regexp"
-	"strconv"
+	"bufio"
 	"strings"
+	"strconv"
+	"regexp"
 )
 
 var validNameRegex = regexp.MustCompile(`^[a-z0-9_]+$`)
 
-func ParseNetworkMap(filePath string) (*Graph, error) {
-	file, err := os.Open(filePath)
+func ParseNetworkMap(filepath string) (*Graph, error) {
+
+	file, err := os.Open(filepath)
 	if err != nil {
 		return nil, fmt.Errorf("Could not open file: %v", err)
 	}
+
+	fileInfo, err := file.Stat()
+	if err != nil {
+		return nil, fmt.Errorf("could not read file stats: %w", err)
+	}
+
+	if fileInfo.Size() == 0 {
+		return nil, fmt.Errorf("network map file is empty")
+	}
+
 	defer file.Close()
 
 	graph := NewGraph()
+
 	scanner := bufio.NewScanner(file)
 
 	currentSection := ""
 
-	for scanner.Scan() {
+	for scanner.Scan(){
+
 		line := scanner.Text()
 
 		line = cleanLine(line)
@@ -52,16 +66,17 @@ func ParseNetworkMap(filePath string) (*Graph, error) {
 		}
 
 		err := scanner.Err()
-
 		if err != nil {
 			return nil, fmt.Errorf("Error reading file: %v", err)
 		}
 	}
 
 	return graph, nil
+
 }
 
 func cleanLine(line string) string {
+
 	idx := strings.Index(line, "#")
 	if idx != -1 {
 		line = line[:idx]
@@ -70,9 +85,11 @@ func cleanLine(line string) string {
 }
 
 func parseStationLine(graph *Graph, line string) error {
+
 	parts := strings.Split(line, ",")
 	if len(parts) != 3 {
 		return fmt.Errorf("Invalid station format (expected name,x,y): %s", line)
+
 	}
 
 	name := strings.TrimSpace(parts[0])
@@ -86,10 +103,11 @@ func parseStationLine(graph *Graph, line string) error {
 
 	x, errX := strconv.Atoi(xStr)
 	y, errY := strconv.Atoi(yStr)
-
-	if errX != nil || errY != nil || x <= 0 || y <= 0 {
+	
+	if errX != nil || errY != nil || x < 0 || y < 0 {
 		return fmt.Errorf("Invalid coordinates for station %s: must be positive integers", name)
 	}
+	
 	err := graph.AddNode(name, x, y)
 	if err != nil {
 		return err
@@ -98,6 +116,7 @@ func parseStationLine(graph *Graph, line string) error {
 }
 
 func parseConnectionLine(graph *Graph, line string) error {
+
 	parts := strings.Split(line, "-")
 	if len(parts) != 2 {
 		return fmt.Errorf("Invalid connection format (expected station1-station2): %s", line)
@@ -107,7 +126,7 @@ func parseConnectionLine(graph *Graph, line string) error {
 	name2 := strings.TrimSpace(parts[1])
 
 	err := graph.AddEdge(name1, name2)
-	if err != nil {
+	if err != nil{
 		return err
 	}
 	return nil
