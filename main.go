@@ -53,13 +53,34 @@ func main() {
 	fmt.Println("Successfully parsed network.map!")
 	fmt.Printf("Total Stations Loaded: %d\n\n", len(graph.Nodes))
 
-	fmt.Println("--- Network Connections ---")
-	for name, node := range graph.Nodes {
-		fmt.Printf("Station [%s] at (%d,%d) connects to:\n", name, node.X, node.Y)
-		for _, edge := range node.Edges {
-			fmt.Printf("  -> %s\n", edge.Name)
-		}
-		fmt.Println()
+	// fmt.Println("--- Network Connections ---")
+	// for name, node := range graph.Nodes {
+	// 	fmt.Printf("Station [%s] at (%d,%d) connects to:\n", name, node.X, node.Y)
+	// 	for _, edge := range node.Edges {
+	// 		fmt.Printf("  -> %s\n", edge.Name)
+	// 	}
+	// 	fmt.Println()
+	// }
+
+	start := "waterloo"
+	end := "st_pancras"
+	
+	fmt.Printf("\n--- Calculating Route: %s -> %s ---\n", start, end)
+
+	path, err := graph.FindShortestPath(start, end)
+	//fmt.Printf("%s", path)
+	if err != nil {
+	 	log.Fatalf("Routing Error: %v\n", err)
 	}
+
+	fmt.Print("Shortest Path Found: ")
+	for i, node := range path {
+		if i > 0 {
+			fmt.Print(" -> ")
+		}
+		fmt.Print(node.Name)
+	}
+	fmt.Println()
+
 
 }
