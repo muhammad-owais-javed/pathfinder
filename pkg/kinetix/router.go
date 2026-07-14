@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func (g *Graph) FindShortestPath(startName string, endName string, ignoreNodes map[string]bool) ([]*Node, error) {
+func (g *Graph) FindShortestPath(startName string, endName string, ignoreNodes map[string]bool, ignoreEdges map[string]bool) ([]*Node, error) {
 
 	startNode, startExists := g.Nodes[startName]
 	endNode, endExists := g.Nodes[endName]
@@ -42,7 +42,9 @@ func (g *Graph) FindShortestPath(startName string, endName string, ignoreNodes m
 
 		for _, neighbor := range currentNode.Edges {
 
-			if visited[neighbor.Name] == false && ignoreNodes[neighbor.Name] == false {
+			trackName := fmt.Sprintf("%s-%s", currentNode.Name, neighbor.Name)
+
+			if visited[neighbor.Name] == false && ignoreNodes[neighbor.Name] == false && ignoreEdges[trackName] == false{
 				visited[neighbor.Name] = true
 				parent[neighbor.Name] = currentNode
 				queue = append(queue, neighbor)
@@ -80,14 +82,28 @@ func (g *Graph) FindDisjointPaths(startName string, endName string) ([][]*Node, 
 
 	var allPaths [][]*Node
 	ignoreNodes := make(map[string]bool)
+	ignoreEdges := make(map[string]bool)
 
 	for {
-		path, err := g.FindShortestPath(startName, endName, ignoreNodes)
+		path, err := g.FindShortestPath(startName, endName, ignoreNodes, ignoreEdges)
 
 		if err != nil {
 			break
 		}
 		allPaths = append(allPaths, path)
+
+
+		for i := 1; i < len(path)-1; i++ {
+			ignoreNodes[path[i].Name] = true
+		}
+
+		for i := 0; i < len(path)-1; i++ {
+			track1 := fmt.Sprintf("%s-%s", path[i].Name, path[i+1].Name)
+			track2 := fmt.Sprintf("%s-%s", path[i+1].Name, path[i].Name)
+			ignoreEdges[track1] = true
+			ignoreEdges[track2] = true
+		}
+		
 		for i := 1; i < len(path)-1; i++ {
 			stationToBlock := path[i].Name
 			ignoreNodes[stationToBlock] = true
