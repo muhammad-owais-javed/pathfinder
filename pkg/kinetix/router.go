@@ -75,3 +75,27 @@ func reversePath(path []*Node) {
 		path[i], path[j] = path[j], path[i]
 	}
 }
+
+func (g *Graph) FindDisjointPaths(startName string, endName string) ([][]*Node, error) {
+
+	var allPaths [][]*Node
+	ignoreNodes := make(map[string]bool)
+
+	for {
+		path, err := g.FindShortestPath(startName, endName, ignoreNodes)
+
+		if err != nil {
+			break
+		}
+		allPaths = append(allPaths, path)
+		for i := 1; i < len(path)-1; i++ {
+			stationToBlock := path[i].Name
+			ignoreNodes[stationToBlock] = true
+		}
+	}
+
+	if len(allPaths) == 0 {
+		return nil, fmt.Errorf("No valid paths found between %s and %s", startName, endName)
+	}
+	return allPaths, nil
+}
