@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func (g *Graph) FindShortestPath(startName string, endName string) ([]*Node, error){
+func (g *Graph) FindShortestPath(startName string, endName string, ignoreNodes map[string]bool) ([]*Node, error) {
 
 	startNode, startExists := g.Nodes[startName]
 	endNode, endExists := g.Nodes[endName]
@@ -12,7 +12,7 @@ func (g *Graph) FindShortestPath(startName string, endName string) ([]*Node, err
 	if !startExists {
 		return nil, fmt.Errorf("Start station does not exist: %s", startName)
 	}
-	
+
 	if !endExists {
 		return nil, fmt.Errorf("End station does not exist: %s", endName)
 	}
@@ -42,7 +42,7 @@ func (g *Graph) FindShortestPath(startName string, endName string) ([]*Node, err
 
 		for _, neighbor := range currentNode.Edges {
 
-			if visited[neighbor.Name] == false {
+			if visited[neighbor.Name] == false && ignoreNodes[neighbor.Name] == false {
 				visited[neighbor.Name] = true
 				parent[neighbor.Name] = currentNode
 				queue = append(queue, neighbor)
