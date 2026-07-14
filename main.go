@@ -64,23 +64,27 @@ func main() {
 
 	start := "waterloo"
 	end := "st_pancras"
-	
+
 	fmt.Printf("\n--- Calculating Route: %s -> %s ---\n", start, end)
 
-	path, err := graph.FindShortestPath(start, end)
+	paths, err := graph.FindDisjointPaths(start, end)
 	//fmt.Printf("%s", path)
 	if err != nil {
-	 	log.Fatalf("Routing Error: %v\n", err)
+		log.Fatalf("Routing Error: %v\n", err)
 	}
 
-	fmt.Print("Shortest Path Found: ")
-	for i, node := range path {
-		if i > 0 {
-			fmt.Print(" -> ")
+	fmt.Printf("Success! Found %d independent paths:\n", len(paths))
+	for pathIdx, path := range paths {
+
+		fmt.Printf("Path %d: ", pathIdx+1)
+
+		for nodeIdx, node := range path {
+			if nodeIdx > 0 {
+				fmt.Print(" -> ")
+			}
+			fmt.Print(node.Name)
 		}
-		fmt.Print(node.Name)
+		fmt.Println() // New line for the next path
 	}
-	fmt.Println()
-
 
 }
