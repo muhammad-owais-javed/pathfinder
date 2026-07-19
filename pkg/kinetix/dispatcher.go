@@ -1,6 +1,9 @@
 package kinetix
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Train struct {
 	ID        int
@@ -40,10 +43,10 @@ func Dispatch(paths [][]*Node, numTrains int) {
 	}
 
 	for {
-		moveThisTrain := false
+		movedThisTurn := false
 		var turnOutput []string
 
-		pathDispatchTurn := make(map[int]bool)
+		pathDispatchedThisTurn := make(map[int]bool)
 
 		for _, t := range allTrains {
 			if t.Finished == true {
@@ -60,9 +63,9 @@ func Dispatch(paths [][]*Node, numTrains int) {
 					t.Finished = true
 				}
 
-				moveThisTrain = true
+				movedThisTurn = true
 			} else {
-				if pathDispatchedThisTurn[t.PathIndex]==false && pathQueues[t.PathIndex][0].ID == t.ID {
+				if pathDispatchedThisTurn[t.PathIndex] == false && pathQueues[t.PathIndex][0].ID == t.ID {
 
 					pathQueues[t.PathIndex] = pathQueues[t.PathIndex][1:]
 
@@ -76,6 +79,7 @@ func Dispatch(paths [][]*Node, numTrains int) {
 					pathDispatchedThisTurn[t.PathIndex] = true
 					movedThisTurn = true
 
+				}
 			}
 		}
 
