@@ -79,5 +79,11 @@ func Dispatch(paths [][]*Node, numTrains int) {
 			}
 		}
 
+		if movedThisTurn == false {
+			break
+		}
+
+		fmt.Println(strings.Join(turnOutput, " "))
+
 	}
 }
