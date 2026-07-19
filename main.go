@@ -86,5 +86,8 @@ func main() {
 		}
 		fmt.Println() // New line for the next path
 	}
+	numTrains := 3
+
+	kinetix.Dispatch(paths, numTrains)
 
 }
