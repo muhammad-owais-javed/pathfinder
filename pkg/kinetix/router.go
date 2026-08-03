@@ -12,7 +12,9 @@ func (g *Graph) FindOptimalPaths(startName, endName string, numTrains int) ([][]
 		return nil, fmt.Errorf("start or end station does not exist")
 	}
 
-
+	if startName == endName {
+		return nil, fmt.Errorf("start and end station are the same: %s", startName)
+	}
 	flow := make(map[string]map[string]int)
 	for name := range g.Nodes {
 		flow[name] = make(map[string]int)
