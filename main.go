@@ -6,6 +6,7 @@ import (
 	"pathfinder/pkg/kinetix"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func main() {
@@ -100,8 +101,11 @@ func main() {
 			}
 			fmt.Print(node.Name)
 		}
-		fmt.Println() // New line for the next path
+		fmt.Println()
 	}
-	kinetix.Dispatch(paths, numTrains)
+	turns := kinetix.Dispatch(paths, numTrains)
+	for _, turn := range turns {
+		fmt.Println(strings.Join(turn, " "))
+	}
 
 }

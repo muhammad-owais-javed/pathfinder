@@ -16,6 +16,7 @@ type Train struct {
 func Dispatch(paths [][]*Node, numTrains int) {
 	pathQueues := make([][]*Train, len(paths))
 	var allTrains []*Train
+	var allTurns [][]string
 
 	for i := 1; i <= numTrains; i++ {
 		bestPathIdx := 0
@@ -87,7 +88,11 @@ func Dispatch(paths [][]*Node, numTrains int) {
 			break
 		}
 
+		allTurns = append(allTurns, turnOutput)
+
 		fmt.Println(strings.Join(turnOutput, " "))
 
 	}
+
+	return allTurns
 }
