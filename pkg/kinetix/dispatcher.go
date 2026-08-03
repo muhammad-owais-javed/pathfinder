@@ -13,7 +13,7 @@ type Train struct {
 	Finished  bool
 }
 
-func Dispatch(paths [][]*Node, numTrains int) {
+func Dispatch(paths [][]*Node, numTrains int) [][]string{
 	pathQueues := make([][]*Train, len(paths))
 	var allTrains []*Train
 	var allTurns [][]string
