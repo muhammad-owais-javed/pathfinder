@@ -58,12 +58,25 @@ func (g *Graph) FindOptimalPaths(startName, endName string, numTrains int) ([][]
 	return bestPaths, nil
 }
 
-// residualBFS finds a path while keeping the "Undo" rules of Network Flow.
 func (g *Graph) residualBFS(start, end *Node, flow map[string]map[string]int) map[string]*Node {
 	queue := []*Node{start}
 	parent := make(map[string]*Node)
 	visited := make(map[string]bool)
 	visited[start.Name] = true
+
+	// Helper function to check if a station is already being used by another path.
+	// If it is, it returns the name of the station that sent the train there.
+	isNodeUsed := func(nodeName string) (bool, string) {
+		if nodeName == start.Name || nodeName == end.Name {
+			return false, "" // Start and End can hold infinite trains
+		}
+		for prevName, edges := range flow {
+			if edges[nodeName] == 1 {
+				return true, prevName
+			}
+		}
+		return false, ""
+	}
 
 	for len(queue) > 0 {
 		curr := queue[0]
@@ -74,29 +87,40 @@ func (g *Graph) residualBFS(start, end *Node, flow map[string]map[string]int) ma
 		}
 
 		for _, neighbor := range curr.Edges {
-			// We can travel to a neighbor IF:
-			// 1. We haven't visited it in this BFS run AND
-			// 2. The flow from curr -> neighbor is not already 1 (meaning it's not blocked forwards)
-			if !visited[neighbor.Name] && flow[curr.Name][neighbor.Name] < 1 {
+			// Moving backward to the existing stop
+			if flow[neighbor.Name][curr.Name] == 1 {
+				if !visited[neighbor.Name] {
+					visited[neighbor.Name] = true
+					parent[neighbor.Name] = curr
+					queue = append(queue, neighbor)
+				}
+				continue
+			}
+
+			// Movinf Forward
+			if flow[curr.Name][neighbor.Name] == 0 {
+				used, prevNode := isNodeUsed(neighbor.Name)
 				
-				// VERTEX CAPACITY RULE: 
-				// If the neighbor is already part of another path (it has flow going out of it),
-				// we are ONLY allowed to visit it if we are walking backwards (undoing) its flow.
-				isNodeUsed := false
-				for _, outFlow := range flow[neighbor.Name] {
-					if outFlow == 1 && neighbor.Name != end.Name && neighbor.Name != start.Name {
-						isNodeUsed = true
-						break
+				if !used {
+					// Normal BFS step
+					if !visited[neighbor.Name] {
+						visited[neighbor.Name] = true
+						parent[neighbor.Name] = curr
+						queue = append(queue, neighbor)
+					}
+				} else {
+					// We are allowed to step on the stations, BUT we must immediately go backwards 
+					// down its incoming track to force an "Undo"
+					if !visited[neighbor.Name] && !visited[prevNode] {
+						visited[neighbor.Name] = true
+						parent[neighbor.Name] = curr
+						
+						visited[prevNode] = true
+						parent[prevNode] = neighbor
+						
+						queue = append(queue, g.Nodes[prevNode])
 					}
 				}
-
-				if isNodeUsed && flow[curr.Name][neighbor.Name] != -1 {
-					continue
-				}
-
-				visited[neighbor.Name] = true
-				parent[neighbor.Name] = curr
-				queue = append(queue, neighbor)
 			}
 		}
 	}
