@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"pathfinder/pkg/kinetix"
+	"os"
+	"strconv"
 )
 
 func main() {
@@ -62,7 +64,7 @@ func main() {
 	// 	fmt.Printf("-> I can travel to: %s (located at %d,%d)\n", neighbor.Name, neighbor.X, neighbor.Y)
 	// }
 
-	graph, err := kinetix.ParseNetworkMap("data/network.map")
+	graph, err := kinetix.ParseNetworkMap(filePath)
 	//fmt.Println(graph)
 	if err != nil {
 		log.Fatalf("Failed to parse network map: %v\n", err)
@@ -79,12 +81,9 @@ func main() {
 	// 	fmt.Println()
 	// }
 
-	start := "waterloo"
-	end := "st_pancras"
+	fmt.Printf("\n--- Calculating Route: %s -> %s ---\n", startStation, endStation)
 
-	fmt.Printf("\n--- Calculating Route: %s -> %s ---\n", start, end)
-
-	paths, err := graph.FindDisjointPaths(start, end)
+	paths, err := graph.FindDisjointPaths(startStation, endStation)
 	//fmt.Printf("%s", path)
 	if err != nil {
 		log.Fatalf("Routing Error: %v\n", err)
@@ -103,8 +102,6 @@ func main() {
 		}
 		fmt.Println() // New line for the next path
 	}
-	numTrains := 3
-
 	kinetix.Dispatch(paths, numTrains)
 
 }
