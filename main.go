@@ -9,6 +9,23 @@ import (
 func main() {
 	fmt.Println("** Main Function***")
 
+	if len(os.Args) != 5 {
+		fmt.Fprintf(os.Stderr, "Error: Incorrect number of command line arguments.\n")
+		fmt.Fprintf(os.Stderr, "Usage: go run . [path_to_file] [start_station] [end_station] [number_of_trains]\n")
+		os.Exit(1)
+	}
+
+	filePath := os.Args[1]
+	startStation := os.Args[2]
+	endStation := os.Args[3]
+	numTrainsStr := os.Args[4]
+
+	numTrains, err := strconv.Atoi(numTrainsStr)
+	if err != nil || numTrains <= 0 {
+		fmt.Fprintf(os.Stderr, "Error: Number of trains must be a valid positive integer.\n")
+		os.Exit(1)
+	}
+
 	// graph := kinetix.NewGraph()
 	// fmt.Printf("Graph created! Number of stations %d\n", len(graph.Nodes))
 
