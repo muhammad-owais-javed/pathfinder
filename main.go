@@ -83,7 +83,7 @@ func main() {
 
 	fmt.Printf("\n--- Calculating Route: %s -> %s ---\n", startStation, endStation)
 
-	paths, err := graph.FindDisjointPaths(startStation, endStation)
+	paths, err := graph.FindOptimalPaths(startStation, endStation, numTrains)
 	//fmt.Printf("%s", path)
 	if err != nil {
 		log.Fatalf("Routing Error: %v\n", err)
